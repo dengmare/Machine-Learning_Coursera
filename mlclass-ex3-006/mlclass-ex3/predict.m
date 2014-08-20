@@ -21,9 +21,14 @@ p = zeros(size(X, 1), 1);
 %       can use max(A, [], 2) to obtain the max for each row.
 %
 
+X = [ones(m,1), X];
 
+hiddenLayer = sigmoid(X * Theta1'); % now hiddenLayer is a 5000x25 matrix
+hiddenLayer = [ones(m,1), hiddenLayer];
 
+outputLayer = sigmoid(hiddenLayer * Theta2');
 
+[~,p] = max(outputLayer, [], 2);
 
 
 
