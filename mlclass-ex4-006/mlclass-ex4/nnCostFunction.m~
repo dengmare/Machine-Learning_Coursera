@@ -45,13 +45,11 @@ hiddenLayer = [ones(m, 1), hiddenLayer]; %hidden now 5000x26;
 
 outputLayer = sigmoid( hiddenLayer * Theta2' ); %output now 5000x10;
 yMat = (...
-    repmat(y, 1, num_labels) == repmat(1:num_labels, m, 1)...
-    ); % turn vector y in into a matrix
+    repmat(y, 1, 10) == repmat(1:num_labels, m, 1)...
+    );
 
 
-J = sum(sum(...
-    1 / m .* ( -yMat .* log(outputLayer) - (1-yMat) .* log(1-outputLayer) )...
-    ));
+J = sum1 / m .* ( -yMat * log(outputLayer) - (1-yMat) .* log(1-outputLayer) );
 
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
