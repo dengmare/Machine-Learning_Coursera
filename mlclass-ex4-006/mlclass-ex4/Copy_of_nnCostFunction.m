@@ -38,28 +38,13 @@ Theta2_grad = zeros(size(Theta2));
 %         variable J. After implementing Part 1, you can verify that your
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
-X = [ones(m,1), X];
-
-hiddenLayer = sigmoid( X * Theta1') ;   %hidden now 5000x25;
-hiddenLayer = [ones(m, 1), hiddenLayer]; %hidden now 5000x26;
-
-outputLayer = sigmoid( hiddenLayer * Theta2' ); %output now 5000x10;
-yMat = (...
-    repmat(y, 1, num_labels) == repmat(1:num_labels, m, 1)...
-    ); % turn vector y in into a matrix
-
-
-J = sum(sum(...
-    1 / m .* ( -yMat .* log(outputLayer) - (1-yMat) .* log(1-outputLayer) )...
-    ));
-
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
 %         the cost function with respect to Theta1 and Theta2 in Theta1_grad and
 %         Theta2_grad, respectively. After implementing Part 2, you can check
 %         that your implementation is correct by running checkNNGradients
-% 
+%
 %         Note: The vector y passed into the function is a vector of labels
 %               containing values from 1..K. You need to map this vector into a 
 %               binary vector of 1's and 0's to be used with the neural network
@@ -78,24 +63,38 @@ J = sum(sum(...
 %
 
 
+a1 = [ones(m, 1) X];
+a2 = [ones(m, 1) sigmoid(a1 * Theta1')];
+sig = sigmoid(a2 * Theta2');
+yVector = repmat([1:num_labels], m, 1) == repmat(y, 1, num_labels);
+cost = -yVector .* log(sig) - (1 - yVector) .* log(1 - sig);
 
+Theta1NoBias = Theta1(:, 2:end);
+Theta2NoBias = Theta2(:, 2:end);
+J = (1 / m) * sum(sum(cost)) + (lambda / (2 * m)) * (sum(sum(Theta1NoBias .^ 2)) + sum(sum(Theta2NoBias .^ 2)));
 
+delta1 = zeros(size(Theta1));
+delta2 = zeros(size(Theta2));
 
+for t = 1:m,
+	a1t = a1(t,:)';
+	a2t = a2(t,:)';
+	sigt = sig(t,:)';
+	yVectorT = yVector(t,:)';
 
+	d3t = sigt - yVectorT;
 
+	z2t = [1; Theta1 * a1t];
+	d2t = Theta2' * d3t .* sigmoidGradient(z2t);
 
+	delta1 = delta1 + d2t(2:end) * a1t';
+	delta2 = delta2 + d3t * a2t';
+end;
 
-
-
-
-
-
-
-
-
-
-
-% -------------------------------------------------------------
+Theta1ZeroBias = [ zeros(size(Theta1, 1), 1) Theta1NoBias ];
+Theta2ZeroBias = [ zeros(size(Theta2, 1), 1) Theta2NoBias ];
+Theta1_grad = (1 / m) * delta1 + (lambda / m) * Theta1ZeroBias;
+Theta2_grad = (1 / m) * delta2 + (lambda / m) * Theta2ZeroBias;
 
 % =========================================================================
 

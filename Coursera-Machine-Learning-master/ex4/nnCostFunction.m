@@ -62,7 +62,7 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-a1 = [ones(m, 1) X];
+
 a1 = [ones(m, 1) X];
 a2 = [ones(m, 1) sigmoid(a1 * Theta1')];
 sig = sigmoid(a2 * Theta2');
