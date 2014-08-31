@@ -22,11 +22,30 @@ sigma = 0.3;
 %  Note: You can compute the prediction error using 
 %        mean(double(predictions ~= yval))
 %
+C_trial = [ 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30];
+sigma_trial = [ 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30];
 
+model= svmTrain(X, y, C, @(x1, x2) gaussianKernel(x1, x2, sigma)); 
 
+bestC_sig = ones(1,3);
+for Ctry = C_trial
+    for Stry = sigma_trial
+        %fprintf('Attempting C=%f, sigma=%f\n',Ctry,Stry);
+        model= svmTrain(X, y, Ctry, @(x1, x2) gaussianKernel(x1, x2, Stry)); 
+        pred = svmPredict(model, Xval);
+        predErr = mean(double(pred ~= yval));
+        
+        if( predErr < bestC_sig(1))
+            bestC_sig = [predErr, Ctry, Stry];
+        end
+         
+    end
+end
 
+fprintf('\n Best Found: C = %f, sigma = %f\n', bestC_sig(2), bestC_sig(3));
 
-
+C = bestC_sig(2);
+sigma = bestC_sig(3);
 
 
 % =========================================================================
