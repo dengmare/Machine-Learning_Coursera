@@ -41,6 +41,10 @@ Theta_grad = zeros(size(Theta));
 %
 
 
+% Costfunctions without regulations
+
+J = 0.5 * sum(sum( ((X * Theta' - Y) .*R ).^2 ));
+
 
 
 
