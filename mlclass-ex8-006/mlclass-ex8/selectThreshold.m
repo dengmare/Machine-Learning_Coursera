@@ -10,6 +10,10 @@ bestEpsilon = 0;
 bestF1 = 0;
 F1 = 0;
 
+recall = 0;
+precision = 0;
+predict = zeros(size(yval));
+
 stepsize = (max(pval) - min(pval)) / 1000;
 for epsilon = min(pval):stepsize:max(pval)
     
@@ -22,18 +26,21 @@ for epsilon = min(pval):stepsize:max(pval)
     %               
     % Note: You can use predictions = (pval < epsilon) to get a binary vector
     %       of 0's and 1's of the outlier predictions
+    predict = pval<epsilon;
+    
+    tp = sum( (yval==1)&(predict==1) );
+    
+    recall = tp/(sum(yval));
+    precision = tp/(sum(predict));
+    
+    
+    %     fp = sum( (yval==0)&(predict==1) );
+    %     fn = sum( (yval==1)&(predict==0) );
+    %     recall = tp/(tp+fn); 
+    %     precision = tp/(tp+fp); 
 
-
-
-
-
-
-
-
-
-
-
-
+    
+    F1 = 2 * precision * recall / (precision + recall);
 
     % =============================================================
 
